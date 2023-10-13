@@ -13,7 +13,7 @@ public class StateMachineController {
     @Autowired
     private StateMachine<States, Events> stateMachine;
 
-    @GetMapping("/getEvent")
+    @GetMapping("/sendEvent")
     public String sendEvent(@RequestParam("event") Events event) {
         stateMachine.sendEvent(event);
         return "Event sent: " + event;

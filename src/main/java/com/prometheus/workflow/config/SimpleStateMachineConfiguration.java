@@ -20,6 +20,53 @@ public class SimpleStateMachineConfiguration extends StateMachineConfigurerAdapt
     public void configure(StateMachineStateConfigurer<States, Events> states) throws Exception {
         states
                 .withStates()
+                .initial(States.AWAITING)
+                .states(EnumSet.allOf(States.class));
+    }
+
+    @Override
+    public void configure(StateMachineTransitionConfigurer<States, Events> transitions) throws Exception {
+        transitions
+                .withExternal()
+                .source(States.AWAITING).target(States.CHECKING).event(Events.UNIT_ARRIVED)
+                .and()
+                .withExternal()
+                .source(States.CHECKING).target(States.PROCCESSING_ALLOWED_NUMBER).event(Events.NUMBER_ALLOWED)
+                .and()
+                .withExternal()
+                .source(States.CHECKING).target(States.PROCCESSING_FORBIDEN_NUMBER).event(Events.NUMBER_FORBIDEN)
+                .and()
+                .withExternal()
+                .source(States.PROCCESSING_ALLOWED_NUMBER).target(States.AWAITING).event(Events.IN_AWAITING)
+                .and()
+                .withExternal()
+                .source(States.PROCCESSING_FORBIDEN_NUMBER).target(States.AWAITING).event(Events.IN_AWAITING);
+    }
+
+    @Override
+    public void configure(StateMachineConfigurationConfigurer<States, Events> config) throws Exception {
+        config
+                .withConfiguration()
+                .autoStartup(true)
+                .listener(new StateMachineListenerAdapter<States, Events>() {
+                    @Override
+                    public void stateChanged(org.springframework.statemachine.state.State<States, Events> from, org.springframework.statemachine.state.State<States, Events> to) {
+                        super.stateChanged(from, to);
+                        System.out.printf("Transitioned from %s to %s%n", from == null ? "none" : from.getId(), to.getId());
+                    }
+
+                    /*@Override
+                    public void stateChanged(State<States, Events> from, State<States, Events> to) {
+                        System.out.printf("Transitioned from %s to %s%n", from == null ? "none" : from.getId(), to.getId());
+                    }*/
+                });
+
+    }
+
+    /*@Override
+    public void configure(StateMachineStateConfigurer<States, Events> states) throws Exception {
+        states
+                .withStates()
                 .initial(States.STAGE1)
                 .states(EnumSet.allOf(States.class));
     }
@@ -49,10 +96,11 @@ public class SimpleStateMachineConfiguration extends StateMachineConfigurerAdapt
                         System.out.printf("Transitioned from %s to %s%n", from == null ? "none" : from.getId(), to.getId());
                     }
 
-                    /*@Override
+                    *//*@Override
                     public void stateChanged(State<States, Events> from, State<States, Events> to) {
                         System.out.printf("Transitioned from %s to %s%n", from == null ? "none" : from.getId(), to.getId());
-                    }*/
+                    }*//*
                 });
-    }
+
+    }*/
 }
