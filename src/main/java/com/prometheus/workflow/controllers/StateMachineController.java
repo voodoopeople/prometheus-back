@@ -18,4 +18,16 @@ public class StateMachineController {
         stateMachine.sendEvent(event);
         return "Event sent: " + event;
     }
+
+    @GetMapping("/getState")
+    public String getState() {
+        stateMachine.start();
+        return "The state is: " + stateMachine.getState().getId();
+    }
+
+    @GetMapping("/smStart")
+    public String smStart() {
+        stateMachine.start();
+        return "The state is: " + stateMachine.getState().getId();
+    }
 }
